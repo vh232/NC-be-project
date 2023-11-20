@@ -27,6 +27,7 @@ describe("GET /api/topics", () => {
           });
         });
       });
+    });
   });
 
   describe("GET /api/articles/:article_id", () => {
@@ -76,8 +77,6 @@ describe("GET /api/topics", () => {
         });
     });
   });
-});
-
 
   describe("GET /api", () => {
     test("200: returns object of all available endpoints", () => {
@@ -99,3 +98,15 @@ describe("GET /api/topics", () => {
         });
     });
   });
+
+  // describe('GET /api/articles/:article_id/comments', () => {
+  //   test('200: returns array of comments for given article_id', () => {
+  //     return request(app)
+  //     .get("/api/articles/1/comments")
+  //     .expect(200)
+  //     .then(({ body }) => {
+  //       const { comments } = body
+  //       expect(Array.isArray(comments)).toBe(true)
+  //     })
+  //   });
+  // });

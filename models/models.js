@@ -23,3 +23,8 @@ exports.getSingleArticle = (inputId) => {
 exports.printEndpoints = () => {
     return jsonFile
 }
+
+exports.getSingleArticlesComments = (inputId) => {
+    const id = [ inputId ]
+    return db.query(`SELECT * FROM articles WHERE article_id = $1;`, id)
+}
