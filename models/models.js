@@ -14,9 +14,16 @@ exports.printEndpoints = () => {
 }
 
 exports.getEachArticle = () => {
-    return db.query(`SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id;`)
+    let queryStr = `SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id `
+    
+    queryStr += 'ORDER BY created_at ASC'
+    return db.query(queryStr)
     .then(({rows}) => {
-        console.log(rows)
-        return rows
+        const rowsCopy = JSON.parse(JSON.stringify(rows))
+        const noBodyRows = rowsCopy.map((row) => {
+            delete row.body
+            return row
+        })
+        return noBodyRows
     })
 }
