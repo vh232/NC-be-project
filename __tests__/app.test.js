@@ -49,6 +49,11 @@ describe("GET /api/topics", () => {
           });
         });
     });
+    test('400: responds with error message of bad request if entered id is not valid type', () => {
+      return request(app)
+      .get('/api/articles/cheese')
+      .expect(400)
+    });
   });
 
   describe("app.all error handler", () => {
