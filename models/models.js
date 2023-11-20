@@ -1,4 +1,6 @@
 const db = require('../db/connection')
+const jsonFile = require("../endpoints.json")
+
 
 exports.getEachTopic = () => {
     return db.query(`SELECT * FROM topics`)
@@ -16,4 +18,8 @@ exports.getSingleArticle = (inputId) => {
         }
         return rows[0]
     })
+}
+
+exports.printEndpoints = () => {
+    return jsonFile
 }

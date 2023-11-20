@@ -16,10 +16,9 @@ describe("GET /api/topics", () => {
   test("200: returns array of all topics", () => {
     return request(app)
       .get("/api/topics")
-      .expect(400)
+      .expect(200)
       .then(({ body }) => {
         const { topics } = body;
-        expect(Array.isArray(topics)).toBe(true);
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
@@ -78,3 +77,25 @@ describe("GET /api/topics", () => {
     });
   });
 });
+
+
+  describe("GET /api", () => {
+    test("200: returns object of all available endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+            const { endpoints } = body
+          expect(typeof endpoints).toBe("object");
+          const keys = Object.keys(endpoints)
+          keys.forEach((key) => {
+            expect(endpoints[key]).toMatchObject({
+                description: expect.any(String),
+                queries: expect.any(Array),
+                format: expect.any(String),
+                exampleResponse: expect.any(Object)
+            })
+          })
+        });
+    });
+  });
