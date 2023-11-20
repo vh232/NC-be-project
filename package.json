@@ -34,7 +34,7 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "jest-extended/all"
+      "/Users/vicky/northcoders/backend/be-nc-news/testSetup.js"
     ]
   }
 }
