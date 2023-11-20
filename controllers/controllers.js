@@ -1,4 +1,4 @@
-const { getEachTopic, getSingleArticle, printEndpoints } = require("../models/models")
+const { getEachTopic, getSingleArticle, printEndpoints, getEachArticle } = require("../models/models")
 
 exports.getAllTopics = (req, res, next) => {
     getEachTopic()
@@ -22,3 +22,12 @@ exports.getArticleById = (req, res, next) => {
     .catch(next);
 }
     
+
+
+exports.getAllArticles = (req, res, next) => {
+    getEachArticle()
+    .then((articles) => {
+        res.status(200).send({ articles })
+    })
+    .catch(next);
+}
