@@ -69,6 +69,7 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(({ body }) => {
       const { articles } = body
+      expect(articles.length).toBe(13)
       articles.forEach((article) => {
         expect(article).toMatchObject({
           author: expect.any(String),
@@ -98,6 +99,7 @@ describe("GET /api/articles", () => {
     .expect(200)
     .then(( { body }) => {
       const { articles } = body
+      expect(articles.length).toBe(13)
       articles.forEach((article) => {
         expect(article).not.toHaveProperty('body')
       })
