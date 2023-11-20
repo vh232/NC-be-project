@@ -38,3 +38,14 @@ describe('GET /api/topics', () => {
         })
     });
 });
+
+describe('GET /api/articles/:article_id', () => {
+    test('200: returns an article object when passed a valid id', () => {
+        return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then(({body}) => {
+            expect(typeof body).toEqual(object)
+        })
+    });
+});

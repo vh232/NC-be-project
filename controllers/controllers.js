@@ -1,4 +1,4 @@
-const { getEachTopic } = require("../models/models")
+const { getEachTopic, getSingleArticle } = require("../models/models")
 
 exports.getAllTopics = (req, res, next) => {
     getEachTopic()
@@ -10,4 +10,9 @@ exports.getAllTopics = (req, res, next) => {
 
 exports.getEndpoints = (req, res, next) => {
     
+}
+
+exports.getArticleById = (req, res, next) => {
+    const id = req.params.article_id
+    getSingleArticle(id)
 }

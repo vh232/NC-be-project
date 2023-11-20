@@ -6,3 +6,8 @@ exports.getEachTopic = () => {
         return rows
     })
 }
+
+exports.getSingleArticle = (inputId) => {
+    const id = [ inputId ]
+    return db.query(`SELECT * FROM articles WHERE id = `)
+}
