@@ -53,10 +53,21 @@ describe("GET /api/topics", () => {
       return request(app)
       .get('/api/articles/cheese')
       .expect(400)
+      .then(( { body }) => {
+        expect(body.msg).toBe('bad request')
+      })
+    });
+    test('404: responds with error message of "not found" if entered id does not exist', () => {
+      return request(app)
+      .get('/api/articles/1000')
+      .expect(404)
+      .then(( { body }) => {
+        expect(body.msg).toBe('not found')
+      })
     });
   });
 
-  describe("app.all error handler", () => {
+  describe("app.all error handler for none-existent paths", () => {
     test('404: responds with "path not found" if typo passed in url', () => {
       return request(app)
         .get("/api/topic")
