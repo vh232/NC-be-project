@@ -3,6 +3,8 @@ const { getAllTopics, getArticleById, getEndpoints, getArticleComments, getAllAr
 const { handleServErr, handleCustomErr, handlePsqlErr } = require('./errorhandling');
 const app = express();
 
+app.use(express.json())
+
 app.get('/api/topics', getAllTopics);
 
 app.get('/api', getEndpoints);
