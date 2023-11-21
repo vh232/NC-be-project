@@ -306,3 +306,101 @@ describe("POST /api/articles/:article_id/comments", () => {
       })
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: returns updated article with correct new votes if upvoting", () => {
+    const updatedArticle = {
+      inc_votes: 100,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedArticle)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedArticle).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 200,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("200: returns updated article with correct new votes if downvoting", () => {
+    const updatedArticle = {
+      inc_votes: -10,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedArticle)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedArticle.votes).toEqual(90);
+      });
+  });
+  test("200: returns updated article with correct new votes when passed more than just inc_votes key", () => {
+    const updatedArticle = {
+      inc_votes: -60,
+      extraKey: "whoops"
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedArticle)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedArticle.votes).toEqual(40);
+      });
+  });
+  test('404: returns error code and message "not found" if article_id does not exist', () => {
+    const updatedArticle = {
+      inc_votes: 100,
+    };
+    return request(app)
+      .patch("/api/articles/1100")
+      .send(updatedArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test('400: returns error code and message "bad request" if article_id is invalid type', () => {
+    const updatedArticle = {
+      inc_votes: 100,
+    };
+    return request(app)
+      .patch("/api/articles/cheese")
+      .send(updatedArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test('400: returns error code and message "bad request" if invalid type of inc_votes is passed', () => {
+    const updatedArticle = {
+      inc_votes: "orange",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test('400: returns error code and message "bad request" if no inc_votes key is passed', () => {
+    const updatedArticle = {
+      inc_vote: 5,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updatedArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

@@ -1,5 +1,5 @@
 exports.handlePsqlErr = (err, req, res, next) => {
-    if (err.code === "22P02") {
+    if (err.code === "22P02" || err.code === "23502") {
         res.status(400).send({ msg: 'bad request'})
     } else if (err.detail === `Key (author)=(${req.body.username}) is not present in table "users".`){
         res.status(404).send({ msg: 'user does not exist'})
