@@ -449,3 +449,26 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe('GET /api/articles (topic query)', () => {
+  test('200: returns array of articles in specified topic', () => {
+    return request(app)
+    .get('/api/articles?topic=cats')
+    .expect(200)
+    .then(({ body }) => {
+      const { articles } = body
+      expect(articles.length).toBeGreaterThan(0);
+      articles.forEach((article) => {
+        expect(article.topic).toBe('cats');
+      })
+    })
+  });
+  test('404: returns "not found" when passed invalid topic', () => {
+    return request(app)
+    .get('/api/articles?topic=cheese')
+    .expect(404)
+    .then(({ body} ) => {
+      expect(body.msg).toBe('not found')
+    })
+    })
+  });
