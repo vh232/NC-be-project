@@ -1,4 +1,4 @@
-const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, postNewComment } = require("../models/models")
+const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, postNewComment, deleteCommentById } = require("../models/models")
 
 exports.getAllTopics = (req, res, next) => {
     getEachTopic()
@@ -52,3 +52,12 @@ exports.postComment = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.deleteComment = (req, res, next) => {
+    const id = req.params.comment_id
+    deleteCommentById(id)
+    .then(() => {
+        res.status(204).send({})
+    })
+    .catch(next);
+}
