@@ -47,28 +47,29 @@
       "body": "I find this existence challenging",
       "created_at": 1594329060000,
       "votes": 100,
-      "article_img_url":
-        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
   },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of comments for an article with matching article_id",
     "queries": [],
     "format": {},
-    "exampleResponse": [ {
-      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-      "votes": 14,
-      "author": "butter_bridge",
-      "article_id": 1,
-      "created_at": 1604113380000
-    },
-    {
-      "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-      "votes": 100,
-      "author": "icellusedkars",
-      "article_id": 1,
-      "created_at": 1583025180000
-    }]
+    "exampleResponse": [
+      {
+        "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        "votes": 14,
+        "author": "butter_bridge",
+        "article_id": 1,
+        "created_at": 1604113380000
+      },
+      {
+        "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        "votes": 100,
+        "author": "icellusedkars",
+        "article_id": 1,
+        "created_at": 1583025180000
+      }
+    ]
   },
   "POST /api/articles/:article_id/comments": {
     "description": "allows user to post a new comment on specified article",
@@ -100,5 +101,32 @@
       "name": "do_nothing",
       "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
     }]
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "allows user to delete specified comment",
+    "queries": [],
+    "format": {},
+    "exampleResponse": {
+      "status": "204",
+      "body": {}
+    }
+  },
+  "PATCH /api/article/:article_id": {
+    "description": "allows user to increase or decrease votes on an article object",
+    "queries": [],
+    "format": { 
+      "inc_votes": "Number"
+    },
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": "2020-07-09T20:11:00.000Z",
+      "votes": 200,
+      "article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
   }
 }

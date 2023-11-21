@@ -60,6 +60,21 @@ exports.getEachArticle = () => {
   });
 };
 
+
+
+
+
+
+
+exports.patchSingleArticle = (inputId, voteUpdate) => {
+    const queryVals = [inputId, voteUpdate]
+    let queryStr = `UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *;`
+    return db.query(queryStr, queryVals)
+    .then(({ rows }) => {
+        return rows[0]
+    })
+}
+
 exports.postNewComment = (inputId, comment) => {
   const queryVals = [inputId, comment.username, comment.body];
   if (typeof comment !== "object" || !comment.username || !comment.body) {
@@ -80,3 +95,22 @@ exports.getAllUsers = () => {
     return rows;
   });
 };
+
+
+exports.deleteCommentById = (inputId) => {
+    const id = [inputId]
+    return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, id)
+    .then(({rows}) => {
+        if (!rows.length) {
+            return Promise.reject({ status: 404, msg: 'not found'})
+        }
+        return db.query(`SELECT * FROM comments WHERE comment_id = $1;`, id)
+    })
+    .then(({ rows }) => {
+        if (!rows.length) {
+            return rows
+        } else {
+            return 'unable to delete comment'
+        }
+    })
+}

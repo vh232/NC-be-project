@@ -1,4 +1,6 @@
-const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, postNewComment, getAllUsers } = require("../models/models")
+const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, patchSingleArticle, postNewComment, deleteCommentById, getAllUsers } = require("../models/models")
+
+
 
 exports.getAllTopics = (req, res, next) => {
     getEachTopic()
@@ -41,6 +43,18 @@ exports.getArticleComments = (req, res, next) => {
     .catch(next);
 }
 
+exports.patchArticle = (req, res, next) => {
+    const id = req.params.article_id
+    const voteUpdate = req.body.inc_votes
+    const patchPromises = [checkArticleExists(id), patchSingleArticle(id, voteUpdate)]
+    Promise.all(patchPromises)
+    .then((resolvedPromises) => {
+        const updatedArticle = resolvedPromises[1]
+        res.status(200).send({ updatedArticle })
+    })
+    .catch(next);
+}
+
 exports.postComment = (req, res, next) => {
     const id = req.params.article_id
     const newComment = req.body
@@ -58,5 +72,14 @@ exports.getUsers = (req, res, next) => {
     .then((users) => [
         res.status(200).send({ users })
     ])
+    .catch(next);
+}
+
+exports.deleteComment = (req, res, next) => {
+    const id = req.params.comment_id
+    deleteCommentById(id)
+    .then(() => {
+        res.status(204).send({})
+    })
     .catch(next);
 }
