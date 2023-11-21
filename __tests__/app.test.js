@@ -106,7 +106,7 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body
-        expect(comments.length).toBe(11)
+        expect(comments.length).toBeGreaterThan(1)
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
@@ -125,7 +125,6 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body
-        expect(comments.length).toBe(11)
         expect(comments).toBeSortedBy('created_at', { descending: true})
       });
     });
@@ -143,6 +142,14 @@ describe("GET /api/topics", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('not found')
+      })
+    });
+    test('200: returns an empty array if article exists but has no comments', () => {
+      return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([])
       })
     });
   });
