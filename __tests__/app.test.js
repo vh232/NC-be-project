@@ -91,7 +91,7 @@ describe("GET /api", () => {
           expect(endpoints[key]).toMatchObject({
             description: expect.any(String),
             queries: expect.any(Array),
-            format: expect.any(String),
+            format: expect.any(Object),
             exampleResponse: expect.any(Object),
           });
         });
