@@ -20,19 +20,11 @@ app.get('/api/articles/:article_id/comments', getArticleComments);
 
 app.get('/api/articles', getAllArticles);
 
-
-
 app.patch('/api/articles/:article_id', patchArticle);;
 
 app.post('/api/articles/:article_id/comments', postComment);
 
-
-
-
-
 app.get('/api/users', getUsers);
-
-
 
 app.delete('/api/comments/:comment_id', deleteComment)
 
