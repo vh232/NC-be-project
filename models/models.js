@@ -42,11 +42,24 @@ exports.checkArticleExists = (inputId) => {
         }
     })
 }
-exports.getEachArticle = () => {
-    let queryStr = `SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id `
+exports.getEachArticle = (topic) => {
+    const queryVals = []
+    const validTopics = [`cats`, `mitch`, `paper`]
+    if (topic && !validTopics.includes(topic)) {
+        return Promise.reject({ status: 404, msg: 'not found'})
+    }
+
+    let queryStr = `SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ` 
+
+    if (validTopics.includes(topic)) {
+        queryVals.push(topic)
+        queryStr += `WHERE topic = $1 `
+    }
     
-    queryStr += 'ORDER BY created_at ASC'
-    return db.query(queryStr)
+    queryStr += `GROUP BY articles.article_id `
+    
+    queryStr += `ORDER BY created_at ASC;`
+    return db.query(queryStr, queryVals)
     .then(({rows}) => {
         const rowsCopy = JSON.parse(JSON.stringify(rows))
         const noBodyRows = rowsCopy.map((row) => {
