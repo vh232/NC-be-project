@@ -40,3 +40,9 @@ exports.getArticleComments = (req, res, next) => {
     })
     .catch(next);
 }
+
+exports.patchArticle = (req, res, next) => {
+    const id = req.params.article_id
+    const voteUpdate = req.body.inc_votes
+    console.log(voteUpdate, 'vote update');
+}

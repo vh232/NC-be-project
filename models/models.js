@@ -56,3 +56,13 @@ exports.getEachArticle = () => {
         return noBodyRows
     })
 }
+
+
+
+
+
+
+
+exports.patchSingleArticle = (id) => {
+
+}
