@@ -216,8 +216,91 @@ describe("POST /api/articles/:article_id/comments", () => {
           body: "best article ever",
           comment_id: expect.any(Number),
           created_at: expect.any(String),
-          votes: 0
+          votes: 0,
         });
       });
+  });
+  test("404: responds error message of 'not found' if article doesn't exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("400: responds error message of 'bad request' if article_id is wrong type", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/cheese/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("400: responds error message of 'user does not exist' if user doesn't exist", () => {
+    const newComment = {
+      username: "vh232",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("user does not exist");
+      });
+  });
+  test("400: responds error message of 'incorrect format' if input comment has incorrect key", () => {
+    const newComment = {
+      usernames: "butter_bridge",
+      body: "best article ever",
+    };
+    const newComment2 = {
+      username: 'butter_bridge',
+      body: "best article ever",
+      extraKey: "whoops"
+    }
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("incorrect format");
+      })
+  });
+  test("400: responds error message of 'incorrect format' if input comment doesn't contain all keys needed", () => {
+    const newComment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("incorrect format");
+      })
+  });
+  test("400: responds error message of 'incorrect format' if input comment has extra keys", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+      extraKey: "whoops"
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("incorrect format");
+      })
   });
 });
