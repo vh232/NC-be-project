@@ -78,37 +78,81 @@ describe("GET /api/topics", () => {
     });
   });
 
-describe("GET /api", () => {
-  test("200: returns object of all available endpoints", () => {
-    return request(app)
-      .get("/api")
+  describe("GET /api", () => {
+    test("200: returns object of all available endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+            const { endpoints } = body
+          expect(typeof endpoints).toBe("object");
+          const keys = Object.keys(endpoints)
+          keys.forEach((key) => {
+            expect(endpoints[key]).toMatchObject({
+                description: expect.any(String),
+                queries: expect.any(Array),
+                format: expect.any(String),
+                exampleResponse: expect.any(Object)
+            })
+          })
+        });
+    });
+  });
+
+  describe('GET /api/articles/:article_id/comments', () => {
+    test('200: returns array of comments for given article_id', () => {
+      return request(app)
+      .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body }) => {
-        const { endpoints } = body;
-        expect(typeof endpoints).toBe("object");
-        const keys = Object.keys(endpoints);
-        keys.forEach((key) => {
-          expect(endpoints[key]).toMatchObject({
-            description: expect.any(String),
-            queries: expect.any(Array),
-            format: expect.any(String),
-            exampleResponse: expect.any(Object),
-          });
-        });
+        const { comments } = body
+        expect(comments.length).toBeGreaterThan(1)
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number)
+          })
+        })
+        })
+      })
+      test('200: returns array of comments ordered by most recent', () => {
+        return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body
+        expect(comments).toBeSortedBy('created_at', { descending: true})
       });
-  });
-});
-
-describe('app.all handles non-existent paths', () => {
-  test('404: responds with "path not found" if typo passed in url', () => {
-    return request(app)
-      .get("/api/topic")
+    });
+    test('400: returns with "bad request" as error message when invalid input of id type', () => {
+      return request(app)
+      .get("/api/articles/cheese/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      })
+    });
+    test('404: returns with "not found" as error message when passed non-existent id', () => {
+      return request(app)
+      .get("/api/articles/1045/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("path not found");
-      });
+        expect(body.msg).toBe('not found')
+      })
+    });
+    test('200: returns an empty array if article exists but has no comments', () => {
+      return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([])
+      })
+    });
   });
-});
 
 describe("GET /api/articles", () => {
   test('200: returns an array of article objects with added comment count', () => {
