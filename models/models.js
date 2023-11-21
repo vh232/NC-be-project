@@ -56,3 +56,12 @@ exports.getEachArticle = () => {
         return noBodyRows
     })
 }
+
+exports.postNewComment = (inputId, comment) => {
+    const queryVals = [inputId, comment.username, comment.body]
+    let queryStr = "INSERT INTO comments (body, author, article_id) VALUES ($3, $2, $1) RETURNING *"
+    return db.query(queryStr, queryVals)
+    .then(({ rows }) => {
+        return rows[0]
+    })
+}

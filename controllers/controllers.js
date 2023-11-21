@@ -1,4 +1,4 @@
-const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle } = require("../models/models")
+const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, postNewComment } = require("../models/models")
 
 exports.getAllTopics = (req, res, next) => {
     getEachTopic()
@@ -37,6 +37,16 @@ exports.getArticleComments = (req, res, next) => {
     .then((resolvedPromises) => {
         const comments = resolvedPromises[0]
         res.status(200).send({ comments: comments })
+    })
+    .catch(next);
+}
+
+exports.postComment = (req, res, next) => {
+    const id = req.params.article_id
+    const newComment = req.body
+    postNewComment(id, newComment)
+    .then((postedComment) => {
+        res.status(201).send({ postedComment })
     })
     .catch(next);
 }
