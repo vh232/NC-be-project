@@ -1,4 +1,4 @@
-const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, postNewComment } = require("../models/models")
+const { getEachTopic, getSingleArticle, printEndpoints, getSingleArticlesComments, checkArticleExists, getEachArticle, postNewComment, getAllUsers } = require("../models/models")
 
 exports.getAllTopics = (req, res, next) => {
     getEachTopic()
@@ -52,3 +52,11 @@ exports.postComment = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getUsers = (req, res, next) => {
+    getAllUsers()
+    .then((users) => [
+        res.status(200).send({ users })
+    ])
+    .catch(next);
+}

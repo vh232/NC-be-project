@@ -1,71 +1,82 @@
-const db = require('../db/connection')
-const jsonFile = require("../endpoints.json")
-
+const db = require("../db/connection");
+const jsonFile = require("../endpoints.json");
 
 exports.getEachTopic = () => {
-    return db.query(`SELECT * FROM topics;`)
-    .then(({ rows }) => {
-        return rows
-    })
-}
+  return db.query(`SELECT * FROM topics;`).then(({ rows }) => {
+    return rows;
+  });
+};
 
 exports.getSingleArticle = (inputId) => {
-    const id = [ inputId ]
-    return db.query(`SELECT * FROM articles WHERE article_id = $1;`, id)
+  const id = [inputId];
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1;`, id)
     .then(({ rows }) => {
-        if (rows.length === 0) {
-            return Promise.reject({ status: 404, msg: 'not found'})
-        }
-        return rows[0]
-    })
-}
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
+      return rows[0];
+    });
+};
 
 exports.printEndpoints = () => {
-    return jsonFile
-}
+  return jsonFile;
+};
 
 exports.getSingleArticlesComments = (inputId) => {
-    const id = [ inputId ]
-    return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`, id)
-    
-    .then(({ rows })  => {
-        return rows
-    })
-}
+  const id = [inputId];
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`,
+      id
+    )
+
+    .then(({ rows }) => {
+      return rows;
+    });
+};
 
 exports.checkArticleExists = (inputId) => {
-    const id = [ inputId ]
-    return db.query(`SELECT * FROM articles WHERE article_id = $1;`, id)
-    .then(({rows}) => {
-        if (rows.length === 0) {
-            return Promise.reject({ status: 404, msg: 'not found'})
-        }
-    })
-}
+  const id = [inputId];
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1;`, id)
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
+      }
+    });
+};
 exports.getEachArticle = () => {
-    let queryStr = `SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id `
-    
-    queryStr += 'ORDER BY created_at ASC'
-    return db.query(queryStr)
-    .then(({rows}) => {
-        const rowsCopy = JSON.parse(JSON.stringify(rows))
-        const noBodyRows = rowsCopy.map((row) => {
-            delete row.body
-            return row
-        })
-        return noBodyRows
-    })
-}
+  let queryStr = `SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id `;
+
+  queryStr += "ORDER BY created_at ASC";
+  return db.query(queryStr).then(({ rows }) => {
+    const rowsCopy = JSON.parse(JSON.stringify(rows));
+    const noBodyRows = rowsCopy.map((row) => {
+      delete row.body;
+      return row;
+    });
+    return noBodyRows;
+  });
+};
 
 exports.postNewComment = (inputId, comment) => {
-    const queryVals = [inputId, comment.username, comment.body]
-    if (typeof comment !== 'object' || !comment.username || !comment.body) {
-        return Promise.reject({ status: 400, msg: 'incorrect format'})
-    }
-    
-    let queryStr = "INSERT INTO comments (body, author, article_id) VALUES ($3, $2, $1) RETURNING *;"
-    return db.query(queryStr, queryVals)
-    .then(({ rows }) => {
-        return rows[0]
-    })
-}
+  const queryVals = [inputId, comment.username, comment.body];
+  if (typeof comment !== "object" || !comment.username || !comment.body) {
+    return Promise.reject({ status: 400, msg: "incorrect format" });
+  }
+
+  let queryStr =
+    "INSERT INTO comments (body, author, article_id) VALUES ($3, $2, $1) RETURNING *;";
+  return db.query(queryStr, queryVals).then(({ rows }) => {
+    return rows[0];
+  });
+};
+
+exports.getAllUsers = () => {
+  let queryStr = `SELECT * FROM users;`;
+  return db.query(queryStr).then(({ rows }) => {
+    console.log(rows)
+    return rows;
+  });
+};
