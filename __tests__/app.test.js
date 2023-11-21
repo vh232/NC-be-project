@@ -270,7 +270,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("incorrect format");
-      })
+      });
+      });
   });
   test("400: responds error message of 'incorrect format' if input comment doesn't contain all keys needed", () => {
     const newComment = {
@@ -282,13 +283,13 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("incorrect format");
-      })
+      });
   });
   test("201: responds with success code and posts new comment as long as username and body keys are present. Returns posted comment, ignoring any extra keys.", () => {
     const newComment = {
       username: "butter_bridge",
       body: "best article ever",
-      extraKey: "whoops"
+      extraKey: "whoops",
     };
     return request(app)
       .post("/api/articles/2/comments")
@@ -303,7 +304,51 @@ describe("POST /api/articles/:article_id/comments", () => {
           created_at: expect.any(String),
           votes: 0,
         });
-      })
+      });
+  });
+
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: returns no content upon successful deletion of comment", () => {
+    return request(app)
+    .delete("/api/comments/2")
+    .expect(204);
+  });
+  test('404: returns "not found" when non-existent comment_id entered', () => {
+    return request(app)
+    .delete("/api/comments/100")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('not found')
+    })
+  });
+  test('400: returns "bad request" when invalid type of comment_id entered', () => {
+    return request(app)
+    .delete("/api/comments/cheese")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('bad request')
+    })
+      });
+  });
+
+
+describe("GET /api/users", () => {
+  test("200: returns array of all user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users.length).toBeGreaterThan(1);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
   });
 });
 
