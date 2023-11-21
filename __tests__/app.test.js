@@ -199,6 +199,114 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: responds with success code when comment is created, returns object of posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.postedComment).toEqual({
+          article_id: 2,
+          author: "butter_bridge",
+          body: "best article ever",
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
+          votes: 0,
+        });
+      });
+  });
+  test("404: responds error message of 'not found' if article doesn't exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("400: responds error message of 'bad request' if article_id is wrong type", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/cheese/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("404: responds error message of 'user does not exist' if user doesn't exist", () => {
+    const newComment = {
+      username: "vh232",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("user does not exist");
+      });
+  });
+  test("400: responds error message of 'incorrect format' if input comment has incorrect key", () => {
+    const newComment = {
+      usernames: "butter_bridge",
+      body: "best article ever",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("incorrect format");
+      })
+  });
+  test("400: responds error message of 'incorrect format' if input comment doesn't contain all keys needed", () => {
+    const newComment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("incorrect format");
+      })
+  });
+  test("201: responds with success code and posts new comment as long as username and body keys are present. Returns posted comment, ignoring any extra keys.", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best article ever",
+      extraKey: "whoops"
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.postedComment).toEqual({
+          article_id: 2,
+          author: "butter_bridge",
+          body: "best article ever",
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
+          votes: 0,
+        });
+      })
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   test("200: returns updated article with correct new votes if upvoting", () => {
     const updatedArticle = {
