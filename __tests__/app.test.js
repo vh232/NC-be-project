@@ -472,3 +472,15 @@ describe('GET /api/articles (topic query)', () => {
     })
     })
   });
+
+  describe('GET /api/articles/:article_id (comment_count)', () => {
+    test('200: returns article object with added property of comment_count', () => {
+      return request(app)
+      .get('/api/articles/2')
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body
+        expect(article).toHaveProperty('comment_count', '1')
+      })
+    });
+  });
