@@ -36,8 +36,8 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then(({ body }) => {
-        const { article } = body;
-        expect(article).toMatchObject({
+        const { articles } = body;
+        expect(articles).toMatchObject({
           author: expect.any(String),
           title: expect.any(String),
           article_id: expect.any(Number),
@@ -471,4 +471,16 @@ describe('GET /api/articles (topic query)', () => {
       expect(body.msg).toBe('not found')
     })
     })
+  });
+
+  describe('GET /api/articles/:article_id (comment_count', () => {
+    test('200: returns article object with added property of comment_count', () => {
+      return request(app)
+      .get('/api/articles/2')
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles).toHaveProperty('comment_count', '1')
+      })
+    });
   });

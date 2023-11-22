@@ -1,17 +1,9 @@
 const { getSingleArticle, getEachArticle, checkArticleExists, patchSingleArticle } = require("../models/articles-models");
 
-exports.getArticleById = (req, res, next) => {
-    const id = req.params.article_id
-    getSingleArticle(id)
-    .then((article) => {
-        res.status(200).send({ article })
-    })
-    .catch(next);
-}
-
 exports.getAllArticles = (req, res, next) => {
+    const id = req.params.article_id
     const topic = req.query.topic
-    getEachArticle(topic)
+    getEachArticle(topic, id)
     .then((articles) => {
         res.status(200).send({ articles })
     })
