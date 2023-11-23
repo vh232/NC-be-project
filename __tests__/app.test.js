@@ -256,7 +256,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("user does not exist");
+        expect(body.msg).toBe("not found");
       });
   });
   test("400: responds error message of 'incorrect format' if input comment has incorrect key", () => {
@@ -620,5 +620,129 @@ describe("PATCH /api/comments/:comment_id", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
       });
+  });
+});
+
+describe('POST /api/articles', () => {
+  test('201: returns successful response with posted article', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      article_img_url: "cat-pic-url"
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(( { body }) => {
+      expect(body.postedArticle).toMatchObject({
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      article_img_url: "cat-pic-url",
+      article_id: expect.any(Number),
+      votes: 0,
+      created_at: expect.any(String),
+      comment_count: "0"
+      })
+    })
+  });
+  test('201: returns successful response with posted article using default article_img_url if none-provided', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(( { body }) => {
+      expect(body.postedArticle).toMatchObject({
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      article_img_url: "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+      article_id: expect.any(Number),
+      votes: 0,
+      created_at: expect.any(String),
+      comment_count: "0"
+      })
+    })
+  });
+  test('201: returns successful response with posted article even when extra keys are provided', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      extraKey: "whoops"
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(( { body }) => {
+      expect(body.postedArticle).toMatchObject({
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      article_img_url: "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+      article_id: expect.any(Number),
+      votes: 0,
+      created_at: expect.any(String),
+      comment_count: "0"
+      })
+    })
+  });
+  test('404: returns "not found" when nonexistent user is entered as author', () => {
+    const newArticle = {
+      author: "non-existent user",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(( { body }) => {
+      expect(body.msg).toBe('not found')
+    })
+  });
+  test('404: returns "not found" when nonexistent topic is entered as topic', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article not about cats",
+      topic: "notcats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(( { body }) => {
+      expect(body.msg).toBe('not found')
+    })
+  });
+  test('400: returns "bad request" if missing properties', () => {
+    const newArticle = {
+      title: "Here's my new article",
+      body: "This is an article not about cats",
+      topic: "notcats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(400)
+    .then(( { body }) => {
+      expect(body.msg).toBe('bad request')
+    })
   });
 });

@@ -3,6 +3,8 @@ const {
   getEachArticle,
   checkArticleExists,
   patchSingleArticle,
+  postNewArticle,
+  returnNewArticle,
 } = require("../models/articles-models");
 
 exports.getArticleById = (req, res, next) => {
@@ -38,3 +40,17 @@ exports.patchArticle = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.postArticle = (req, res, next) => {
+  const article = req.body
+  postNewArticle(article)
+  .then(() => {
+    return returnNewArticle(article)
+  })
+  .then(({ rows }) => {
+    const postedArticle = rows[0]
+    console.log(postedArticle)
+    res.status(201).send({ postedArticle })
+  })
+  .catch(next);
+}
