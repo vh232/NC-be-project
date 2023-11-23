@@ -481,61 +481,144 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
   });
 });
 
-describe('GET /api/articles (sorting queries)', () => {
-  test('200: returns array of articles sorted by input column in default descending order', () => {
+describe("GET /api/articles (sorting queries)", () => {
+  test("200: returns array of articles sorted by input column in default descending order", () => {
     return request(app)
-    .get('/api/articles/?sort_by=author')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles).toBeSortedBy('author', { descending: true})
-    })
+      .get("/api/articles/?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("author", { descending: true });
+      });
   });
   test('200: returns array of articles by input order using default "created_at" for sort_by', () => {
     return request(app)
-    .get('/api/articles/?order=asc')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles).toBeSortedBy('created_at', { descending: false})
-    })
+      .get("/api/articles/?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: false });
+      });
   });
   test('400: returns "bad request" when invalid sort_by is entered', () => {
     return request(app)
-    .get('/api/articles/?sort_by=cheese')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .get("/api/articles/?sort_by=cheese")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
   test('400: returns "bad request" when invalid order is entered', () => {
     return request(app)
-    .get('/api/articles/?order=up')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .get("/api/articles/?order=up")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
 });
 
-describe('GET /api/users/username', () => {
-  test('200: returns individual user object for specified username', () => {
+describe("GET /api/users/username", () => {
+  test("200: returns individual user object for specified username", () => {
     return request(app)
-    .get('/api/users/butter_bridge')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.users).toEqual({
-        username: 'butter_bridge',
-        name: 'jonny',
-        avatar_url:
-          'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
-      })
-    })
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toEqual({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
   });
   test('404: returns "not found" if username does not exist', () => {
     return request(app)
-    .get('/api/users/nonexistentuser')
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe('user does not exist')
-    })
+      .get("/api/users/nonexistentuser")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("user does not exist");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: returns updated comment with correct new votes when upvoting", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: 10,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment.votes).toBe(26);
+      });
+  });
+  test("200: returns updated comment with correct new votes when downvoting", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: -10,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment.votes).toBe(6);
+      });
+  });
+  test("200: returns updated comment with correct new votes when passed more than just the inc_votes key", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        inc_votes: -10,
+        extraKey: 50,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment.votes).toBe(6);
+      });
+  });
+  test('400: returns "bad request" when no inc_votes property is entered', () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({
+        extraKey: 50,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test('404: returns "not found" if no comment matches comment_id', () => {
+    return request(app)
+      .patch("/api/comments/100")
+      .send({
+        extraKey: 50,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test('400: returns error code and message "bad request" if comment_id is invalid type', () => {
+    const updatedComment = {
+      inc_votes: 100,
+    };
+    return request(app)
+      .patch("/api/comments/cheese")
+      .send(updatedComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test('400: returns error code and message "bad request" if invalid type of inc_votes is passed', () => {
+    const updatedComment = {
+      inc_votes: "orange",
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(updatedComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
 });
