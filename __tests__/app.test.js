@@ -176,13 +176,13 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("200: returns array of article objects arranged by date in ascending order", () => {
+  test("200: returns array of article objects arranged by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toBeSortedBy("created_at", { descending: false });
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
   test('200: returns array of article objects without a "body" property', () => {
@@ -271,7 +271,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("incorrect format");
       });
-      });
   });
   test("400: responds error message of 'incorrect format' if input comment doesn't contain all keys needed", () => {
     const newComment = {
@@ -306,32 +305,29 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-
+});
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: returns no content upon successful deletion of comment", () => {
-    return request(app)
-    .delete("/api/comments/2")
-    .expect(204);
+    return request(app).delete("/api/comments/2").expect(204);
   });
   test('404: returns "not found" when non-existent comment_id entered', () => {
     return request(app)
-    .delete("/api/comments/100")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe('not found')
-    })
+      .delete("/api/comments/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
   });
   test('400: returns "bad request" when invalid type of comment_id entered', () => {
     return request(app)
-    .delete("/api/comments/cheese")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .delete("/api/comments/cheese")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
-
+});
 
 describe("GET /api/users", () => {
   test("200: returns array of all user objects", () => {
@@ -390,7 +386,7 @@ describe("PATCH /api/articles/:article_id", () => {
   test("200: returns updated article with correct new votes when passed more than just inc_votes key", () => {
     const updatedArticle = {
       inc_votes: -60,
-      extraKey: "whoops"
+      extraKey: "whoops",
     };
     return request(app)
       .patch("/api/articles/1")
@@ -450,37 +446,73 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe('GET /api/articles (topic query)', () => {
-  test('200: returns array of articles in specified topic', () => {
+describe("GET /api/articles (topic query)", () => {
+  test("200: returns array of articles in specified topic", () => {
     return request(app)
-    .get('/api/articles?topic=cats')
-    .expect(200)
-    .then(({ body }) => {
-      const { articles } = body
-      expect(articles.length).toBeGreaterThan(0);
-      articles.forEach((article) => {
-        expect(article.topic).toBe('cats');
-      })
-    })
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
   });
   test('404: returns "not found" when passed invalid topic', () => {
     return request(app)
-    .get('/api/articles?topic=cheese')
-    .expect(404)
-    .then(({ body} ) => {
-      expect(body.msg).toBe('not found')
-    })
-    })
+      .get("/api/articles?topic=cheese")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
   });
+});
 
-  describe('GET /api/articles/:article_id (comment_count)', () => {
-    test('200: returns article object with added property of comment_count', () => {
-      return request(app)
-      .get('/api/articles/2')
+describe("GET /api/articles/:article_id (comment_count)", () => {
+  test("200: returns article object with added property of comment_count", () => {
+    return request(app)
+      .get("/api/articles/2")
       .expect(200)
       .then(({ body }) => {
-        const { article } = body
-        expect(article).toHaveProperty('comment_count', '1')
-      })
-    });
+        const { article } = body;
+        expect(article).toHaveProperty("comment_count", "1");
+      });
   });
+});
+
+describe('GET /api/articles (sorting queries)', () => {
+  test('200: returns array of articles sorted by input column in default descending order', () => {
+    return request(app)
+    .get('/api/articles/?sort_by=author')
+    .expect(200)
+    .then(({ body }) => {
+      console.log(body)
+      expect(body.articles).toBeSortedBy('author', { descending: true})
+    })
+  });
+  test('200: returns array of articles by input order using default "created_at" for sort_by', () => {
+    return request(app)
+    .get('/api/articles/?order=asc')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toBeSortedBy('created_at', { descending: false})
+    })
+  });
+  test('400: returns "bad request" when invalid sort_by is entered', () => {
+    return request(app)
+    .get('/api/articles/?sort_by=cheese')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('bad request')
+    })
+  });
+  test('400: returns "bad request" when invalid order is entered', () => {
+    return request(app)
+    .get('/api/articles/?order=up')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe('bad request')
+    })
+  });
+});

@@ -32,11 +32,19 @@ exports.checkArticleExists = (inputId) => {
       });
   };
   
-  exports.getEachArticle = (topic) => {
+  exports.getEachArticle = (topic, sort_by = 'created_at', inputOrder = 'DESC') => {
+    const order = inputOrder.toUpperCase()
     const queryVals = []
     const validTopics = [`cats`, `mitch`, `paper`]
+    const validSorts = ['author', 'title', 'topic', 'created_at']
+    const validOrder = ['ASC', 'DESC']
+
     if (topic && !validTopics.includes(topic)) {
         return Promise.reject({ status: 404, msg: 'not found'})
+    }
+
+    if (!validSorts.includes(sort_by) || !validOrder.includes(order)) {
+      return Promise.reject({ status: 400, msg: 'bad request'})
     }
 
     let queryStr = `SELECT articles.*, COUNT(articles.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id ` 
@@ -47,8 +55,7 @@ exports.checkArticleExists = (inputId) => {
     }
     
     queryStr += `GROUP BY articles.article_id `
-    
-    queryStr += `ORDER BY created_at ASC;`
+    queryStr += `ORDER BY ${sort_by} ${order};`
     return db.query(queryStr, queryVals)
     .then(({rows}) => {
         const rowsCopy = JSON.parse(JSON.stringify(rows))
