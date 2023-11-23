@@ -487,7 +487,6 @@ describe('GET /api/articles (sorting queries)', () => {
     .get('/api/articles/?sort_by=author')
     .expect(200)
     .then(({ body }) => {
-      console.log(body)
       expect(body.articles).toBeSortedBy('author', { descending: true})
     })
   });
