@@ -675,4 +675,30 @@ describe('POST /api/articles', () => {
       })
     })
   });
+  test('201: returns successful response with posted article even when extra keys are provided', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      extraKey: "whoops"
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(( { body }) => {
+      expect(body.postedArticle).toMatchObject({
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+      article_img_url: "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+      article_id: expect.any(Number),
+      votes: 0,
+      created_at: expect.any(String),
+      comment_count: "0"
+      })
+    })
+  });
 });
