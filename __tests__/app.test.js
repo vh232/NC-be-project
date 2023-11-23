@@ -515,3 +515,27 @@ describe('GET /api/articles (sorting queries)', () => {
     })
   });
 });
+
+describe('GET /api/users/username', () => {
+  test('200: returns individual user object for specified username', () => {
+    return request(app)
+    .get('/api/users/butter_bridge')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.users).toEqual({
+        username: 'butter_bridge',
+        name: 'jonny',
+        avatar_url:
+          'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+      })
+    })
+  });
+  test('404: returns "not found" if username does not exist', () => {
+    return request(app)
+    .get('/api/users/nonexistentuser')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe('user does not exist')
+    })
+  });
+});
