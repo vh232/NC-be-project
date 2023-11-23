@@ -256,7 +256,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("user does not exist");
+        expect(body.msg).toBe("not found");
       });
   });
   test("400: responds error message of 'incorrect format' if input comment has incorrect key", () => {
@@ -699,6 +699,50 @@ describe('POST /api/articles', () => {
       created_at: expect.any(String),
       comment_count: "0"
       })
+    })
+  });
+  test('404: returns "not found" when nonexistent user is entered as author', () => {
+    const newArticle = {
+      author: "non-existent user",
+      title: "Here's my new article",
+      body: "This is an article about cats",
+      topic: "cats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(( { body }) => {
+      expect(body.msg).toBe('not found')
+    })
+  });
+  test('404: returns "not found" when nonexistent topic is entered as topic', () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Here's my new article",
+      body: "This is an article not about cats",
+      topic: "notcats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(404)
+    .then(( { body }) => {
+      expect(body.msg).toBe('not found')
+    })
+  });
+  test('400: returns "bad request" if missing properties', () => {
+    const newArticle = {
+      title: "Here's my new article",
+      body: "This is an article not about cats",
+      topic: "notcats",
+    }
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(400)
+    .then(( { body }) => {
+      expect(body.msg).toBe('bad request')
     })
   });
 });
