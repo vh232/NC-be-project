@@ -770,7 +770,7 @@ describe("POST /api/topics", () => {
     const newTopic = {
       slug: "dogs",
       description: "not cats",
-      extraKey: "whoops"
+      extraKey: "whoops",
     };
     return request(app)
       .post("/api/topics")
@@ -793,7 +793,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(201)
       .then(({ body }) => {
-        expect(body.newTopic).toEqual(newTopic)
+        expect(body.newTopic).toEqual(newTopic);
       });
   });
   test("400: returns 'bad request' when pre-existing topic is passed", () => {
@@ -806,7 +806,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
       });
   });
   test("400: returns 'bad request' when required key is missing", () => {
@@ -818,7 +818,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
       });
   });
   test("400: returns 'bad request' when empty string entered for topic", () => {
@@ -831,7 +831,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
       });
   });
   test("400: returns 'bad request' when empty string entered for description", () => {
@@ -844,7 +844,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
       });
   });
   test("400: returns 'bad request' when no letter or number characters are entered for topic", () => {
@@ -857,7 +857,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
       });
   });
   test("400: returns 'bad request' when no letter or number characters are entered for description", () => {
@@ -870,7 +870,32 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe('bad request')
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: returns empty body when article is successfully deleted alongside its comments", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+  test("204: returns empty body when article is successfully deleted even if it has no comments", () => {
+    return request(app).delete("/api/articles/2").expect(204);
+  });
+  test('404: returns "not found" when article_id is non-existent', () => {
+    return request(app)
+      .delete("/api/articles/1100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test('400: returns "bad request" when article_id is invalid type', () => {
+    return request(app)
+      .delete("/api/articles/wrongtype")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 });

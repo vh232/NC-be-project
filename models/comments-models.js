@@ -54,3 +54,11 @@ exports.patchSingleComment = (id, voteUpdate) => {
     return rows[0];
   });
 };
+
+exports.deleteArticlesComments = (inputId) => {
+  const id = [inputId];
+  const queryStr = `DELETE FROM comments WHERE article_id = $1 RETURNING *;`;
+  return db.query(queryStr, id).then(({ rows }) => {
+    return rows;
+  });
+};

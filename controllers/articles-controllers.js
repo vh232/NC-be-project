@@ -5,7 +5,9 @@ const {
   patchSingleArticle,
   postNewArticle,
   returnNewArticle,
+  deleteSingleArticle,
 } = require("../models/articles-models");
+const { deleteArticlesComments } = require("../models/comments-models");
 
 exports.getArticleById = (req, res, next) => {
   const id = req.params.article_id;
@@ -42,15 +44,24 @@ exports.patchArticle = (req, res, next) => {
 };
 
 exports.postArticle = (req, res, next) => {
-  const article = req.body
+  const article = req.body;
   postNewArticle(article)
-  .then(() => {
-    return returnNewArticle(article)
-  })
-  .then(({ rows }) => {
-    const postedArticle = rows[0]
-    console.log(postedArticle)
-    res.status(201).send({ postedArticle })
-  })
-  .catch(next);
-}
+    .then(() => {
+      return returnNewArticle(article);
+    })
+    .then(({ rows }) => {
+      const postedArticle = rows[0];
+      res.status(201).send({ postedArticle });
+    })
+    .catch(next);
+};
+
+exports.deleteArticle = (req, res, next) => {
+  const id = req.params.article_id;
+  const deletePromises = [deleteArticlesComments(id), deleteSingleArticle(id)];
+  Promise.all(deletePromises)
+    .then(() => {
+      res.status(204).send({});
+    })
+    .catch(next);
+};

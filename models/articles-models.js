@@ -73,23 +73,36 @@ exports.getEachArticle = (
 };
 
 exports.postNewArticle = (articleInput) => {
-  const { author, title, body, topic } = articleInput
-  const queryVals = [author, title, body, topic]
-  let queryStr = ''
+  const { author, title, body, topic } = articleInput;
+  const queryVals = [author, title, body, topic];
+  let queryStr = "";
   if (!articleInput.article_img_url) {
-  queryStr = `INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4);`
+    queryStr = `INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4);`;
   } else {
-    queryVals.push(articleInput.article_img_url)
-    queryStr = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5);`
+    queryVals.push(articleInput.article_img_url);
+    queryStr = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5);`;
   }
 
-  return db.query(queryStr,queryVals)
-  .then(({ rows }) => {
-    return rows[0]
-  })
-}
+  return db.query(queryStr, queryVals).then(({ rows }) => {
+    return rows[0];
+  });
+};
 
 exports.returnNewArticle = (articleInput) => {
-  const queryVals = [articleInput.author, articleInput.title]
-  return db.query(`SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.author = $1 AND articles.title = $2 GROUP BY articles.article_id;`, queryVals)
-}
+  const queryVals = [articleInput.author, articleInput.title];
+  return db.query(
+    `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.author = $1 AND articles.title = $2 GROUP BY articles.article_id;`,
+    queryVals
+  );
+};
+
+exports.deleteSingleArticle = (inputId) => {
+  const id = [inputId];
+  const queryStr = `DELETE FROM articles WHERE article_id = $1 RETURNING *;`;
+  return db.query(queryStr, id).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: "not found" });
+    }
+    return rows;
+  });
+};
