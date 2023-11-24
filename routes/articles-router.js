@@ -10,8 +10,4 @@ articleRouter.patch('/:article_id', patchArticle);
 articleRouter.post('/:article_id/comments', postComment);
 articleRouter.post('/', postArticle);
 
-
-
-
-
 module.exports = articleRouter;
