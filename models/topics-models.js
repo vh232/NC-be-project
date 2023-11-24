@@ -5,3 +5,15 @@ exports.getEachTopic = () => {
       return rows;
     });
   };
+
+
+exports.postNewTopic = (newTopic) => {
+  const { slug, description } = newTopic
+  const queryVals = [slug, description]
+  const queryStr = `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *;`
+  return db.query(queryStr, queryVals)
+  .then(({ rows }) => {
+    console.log(rows[0])
+    return rows[0]
+  })
+}

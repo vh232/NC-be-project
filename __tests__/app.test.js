@@ -623,83 +623,85 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
-describe('POST /api/articles', () => {
-  test('201: returns successful response with posted article', () => {
+describe("POST /api/articles", () => {
+  test("201: returns successful response with posted article", () => {
     const newArticle = {
-      author: "butter_bridge",
-      title: "Here's my new article",
-      body: "This is an article about cats",
-      topic: "cats",
-      article_img_url: "cat-pic-url"
-    }
-    return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(201)
-    .then(( { body }) => {
-      expect(body.postedArticle).toMatchObject({
       author: "butter_bridge",
       title: "Here's my new article",
       body: "This is an article about cats",
       topic: "cats",
       article_img_url: "cat-pic-url",
-      article_id: expect.any(Number),
-      votes: 0,
-      created_at: expect.any(String),
-      comment_count: "0"
-      })
-    })
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.postedArticle).toMatchObject({
+          author: "butter_bridge",
+          title: "Here's my new article",
+          body: "This is an article about cats",
+          topic: "cats",
+          article_img_url: "cat-pic-url",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+        });
+      });
   });
-  test('201: returns successful response with posted article using default article_img_url if none-provided', () => {
+  test("201: returns successful response with posted article using default article_img_url if none-provided", () => {
     const newArticle = {
       author: "butter_bridge",
       title: "Here's my new article",
       body: "This is an article about cats",
       topic: "cats",
-    }
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(201)
-    .then(( { body }) => {
-      expect(body.postedArticle).toMatchObject({
-      author: "butter_bridge",
-      title: "Here's my new article",
-      body: "This is an article about cats",
-      topic: "cats",
-      article_img_url: "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
-      article_id: expect.any(Number),
-      votes: 0,
-      created_at: expect.any(String),
-      comment_count: "0"
-      })
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.postedArticle).toMatchObject({
+          author: "butter_bridge",
+          title: "Here's my new article",
+          body: "This is an article about cats",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+        });
+      });
   });
-  test('201: returns successful response with posted article even when extra keys are provided', () => {
+  test("201: returns successful response with posted article even when extra keys are provided", () => {
     const newArticle = {
       author: "butter_bridge",
       title: "Here's my new article",
       body: "This is an article about cats",
       topic: "cats",
-      extraKey: "whoops"
-    }
+      extraKey: "whoops",
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(201)
-    .then(( { body }) => {
-      expect(body.postedArticle).toMatchObject({
-      author: "butter_bridge",
-      title: "Here's my new article",
-      body: "This is an article about cats",
-      topic: "cats",
-      article_img_url: "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
-      article_id: expect.any(Number),
-      votes: 0,
-      created_at: expect.any(String),
-      comment_count: "0"
-      })
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.postedArticle).toMatchObject({
+          author: "butter_bridge",
+          title: "Here's my new article",
+          body: "This is an article about cats",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+        });
+      });
   });
   test('404: returns "not found" when nonexistent user is entered as author', () => {
     const newArticle = {
@@ -707,14 +709,14 @@ describe('POST /api/articles', () => {
       title: "Here's my new article",
       body: "This is an article about cats",
       topic: "cats",
-    }
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(404)
-    .then(( { body }) => {
-      expect(body.msg).toBe('not found')
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
   });
   test('404: returns "not found" when nonexistent topic is entered as topic', () => {
     const newArticle = {
@@ -722,27 +724,153 @@ describe('POST /api/articles', () => {
       title: "Here's my new article",
       body: "This is an article not about cats",
       topic: "notcats",
-    }
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(404)
-    .then(( { body }) => {
-      expect(body.msg).toBe('not found')
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
   });
   test('400: returns "bad request" if missing properties', () => {
     const newArticle = {
       title: "Here's my new article",
       body: "This is an article not about cats",
       topic: "notcats",
-    }
+    };
     return request(app)
-    .post('/api/articles')
-    .send(newArticle)
-    .expect(400)
-    .then(( { body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("POST /api/topics", () => {
+  test("201: returns newly posted topic when request is successful", () => {
+    const newTopic = {
+      slug: "dogs",
+      description: "not cats",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.newTopic).toEqual({
+          slug: "dogs",
+          description: "not cats",
+        });
+      });
+  });
+  test("201: returns newly posted topic when request is successful even if extra keys are input", () => {
+    const newTopic = {
+      slug: "dogs",
+      description: "not cats",
+      extraKey: "whoops"
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.newTopic).toEqual({
+          slug: "dogs",
+          description: "not cats",
+        });
+      });
+  });
+  test("201: successfully posts new topic when pre-existing description is used", () => {
+    const newTopic = {
+      slug: "cats2",
+      description: "duplicating the cats topic",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.newTopic).toEqual(newTopic)
+      });
+  });
+  test("400: returns 'bad request' when pre-existing topic is passed", () => {
+    const newTopic = {
+      slug: "cats",
+      description: "duplicating the cats topic",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
+  });
+  test("400: returns 'bad request' when required key is missing", () => {
+    const newTopic = {
+      description: "not cats",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
+  });
+  test("400: returns 'bad request' when empty string entered for topic", () => {
+    const newTopic = {
+      topic: "",
+      description: "not cats",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
+  });
+  test("400: returns 'bad request' when empty string entered for description", () => {
+    const newTopic = {
+      topic: "",
+      description: "not cats",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
+  });
+  test("400: returns 'bad request' when no letter or number characters are entered for topic", () => {
+    const newTopic = {
+      topic: "      ",
+      description: "not cats",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
+  });
+  test("400: returns 'bad request' when no letter or number characters are entered for description", () => {
+    const newTopic = {
+      topic: "empty space descp",
+      description: "     ",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('bad request')
+      });
   });
 });
