@@ -20,16 +20,16 @@ exports.getArticleById = (req, res, next) => {
 exports.getAllArticles = (req, res, next) => {
 
   const { query } = req;
-  const { topic, sort_by, order, limit, page } = query;
+  const { topic, sort_by, order, limit, p } = query;
 
-  if (limit || page) {
-    paginatedArticles(topic, sort_by, order, limit, page)
+  if (limit || p) {
+    paginatedArticles(topic, sort_by, order, limit, p)
     .then((articles) => {
       res.status(200).send({ articles });
     })
     .catch(next);
   } else {
-  getEachArticle(topic, sort_by, order, limit, page)
+  getEachArticle(topic, sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -60,7 +60,6 @@ exports.postArticle = (req, res, next) => {
   })
   .then(({ rows }) => {
     const postedArticle = rows[0]
-    console.log(postedArticle)
     res.status(201).send({ postedArticle })
   })
   .catch(next);

@@ -70,7 +70,6 @@ exports.getEachArticle = (
       delete row.body;
       return row;
     });
-    console.log(noBodyRows)
     return noBodyRows;
   });
 };
@@ -102,13 +101,19 @@ exports.paginatedArticles =  (
   sort_by = "created_at",
   inputOrder = "DESC",
   limit = 10,
-  page = 1,
+  page = '1',
 ) => {
+  let offset = 0
   const order = inputOrder.toUpperCase();
-  const queryVals = [limit, page];
+  const queryVals = [limit];
   const validTopics = [`cats`, `mitch`, `paper`];
   const validSorts = ["author", "title", "topic", "created_at"];
   const validOrder = ["ASC", "DESC"];
+  const regexNotDigit = /[\D]/g
+  const splitPage = page.split('')
+  if (splitPage.some((character) => regexNotDigit.test(character))) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
 
   if (topic && !validTopics.includes(topic)) {
     return Promise.reject({ status: 404, msg: "not found" });
@@ -116,6 +121,13 @@ exports.paginatedArticles =  (
 
   if (!validSorts.includes(sort_by) || !validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  if (page > 1) {
+    offset = page * limit - limit
+    queryVals.push(offset)
+  } else {
+    queryVals.push(offset)
   }
 
   
@@ -126,6 +138,8 @@ exports.paginatedArticles =  (
     queryStr += `WHERE topic = $3 `;
   }
 
+
+
   queryStr += `GROUP BY articles.article_id `;
   queryStr += `ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2`
   queryStr += `;`
@@ -135,7 +149,6 @@ exports.paginatedArticles =  (
       delete row.body;
       return row;
     });
-    console.log(noBodyRows)
     return noBodyRows;
   });
 };
