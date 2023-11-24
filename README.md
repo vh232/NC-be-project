@@ -4,7 +4,7 @@ This is the back-end project I completed as part of my Northcoders bootcamp. It 
 
 It was built using Node.js and Express.js and uses PostgreSQL as its database. This API will serve as the backend API for a future frontend project to be built using React.js.
 
-You can check out a live version of this app [here](https://nc-be-project.onrender.com), hosted using Render.
+You can check out a live version of this app [here](https://nc-be-project.onrender.com), hosted using Render. All endpoints are viewable [here](https://nc-be-project.onrender.com).
 
 ## Tech Stack
 * Node.js
