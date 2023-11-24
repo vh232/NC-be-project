@@ -24,26 +24,34 @@ You can check out a live version of this app [here](https://nc-be-project.onrend
 
 1. Clone this repository
 </br>
-```$ git clone https://github.com/vh232/NC-be-project.git```
+```
+$ git clone https://github.com/vh232/NC-be-project.git
+```
 2. Run `npm install` to install dependencies listed in the `package.json`
 
 ### Create and Setup Environment Variables
 
 1. Create two .env files:
 </br>
-```$ touch .env.development
+```
+$ touch .env.development
 </br>
-$ touch .env.test```
+$ touch .env.test
+```
 
 2. Insert the following into each file.
  </br>
 .env.development:
 </br> 
-```PGDATABASE=nc_news```
+```
+PGDATABASE=nc_news
+```
 </br>
 .env.test:
 </br> 
-```PGDATABASE=nc_news_test```
+```
+PGDATABASE=nc_news_test
+```
 </br> You can refer to `.env.example` for a template
 
 ### Initialise Databases
