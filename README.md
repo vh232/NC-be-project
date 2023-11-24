@@ -49,8 +49,7 @@ PGDATABASE=nc_news
 </br>
 .env.test:
 </br> 
-```
-PGDATABASE=nc_news_test
+```PGDATABASE=nc_news_test
 ```
 </br> You can refer to `.env.example` for a template
 
