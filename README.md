@@ -36,12 +36,10 @@ $ git clone https://github.com/vh232/NC-be-project.git
 ```
 $ touch .env.development
 $ touch .env.test
-
 ```
 2. Insert the following into each file.
  </br>
 .env.development:
-</br> 
 
 ```
 PGDATABASE=nc_news
