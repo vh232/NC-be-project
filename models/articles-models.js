@@ -37,7 +37,7 @@ exports.getSingleArticle = (inputId) => {
 exports.getEachArticle = (
   topic,
   sort_by = "created_at",
-  inputOrder = "DESC",
+  inputOrder = "DESC"
 ) => {
   const order = inputOrder.toUpperCase();
   const queryVals = [];
@@ -53,7 +53,6 @@ exports.getEachArticle = (
     return Promise.reject({ status: 400, msg: "bad request" });
   }
 
-  
   let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
 
   if (validTopics.includes(topic)) {
@@ -62,8 +61,8 @@ exports.getEachArticle = (
   }
 
   queryStr += `GROUP BY articles.article_id `;
-  queryStr += `ORDER BY ${sort_by} ${order}`
-  queryStr += `;`
+  queryStr += `ORDER BY ${sort_by} ${order}`;
+  queryStr += `;`;
   return db.query(queryStr, queryVals).then(({ rows }) => {
     const rowsCopy = JSON.parse(JSON.stringify(rows));
     const noBodyRows = rowsCopy.map((row) => {
@@ -109,22 +108,21 @@ exports.deleteSingleArticle = (inputId) => {
   });
 };
 
-
-exports.paginatedArticles =  (
+exports.paginatedArticles = (
   topic,
   sort_by = "created_at",
   inputOrder = "DESC",
   limit = 10,
-  page = '1',
+  page = "1"
 ) => {
-  let offset = 0
+  let offset = 0;
   const order = inputOrder.toUpperCase();
   const queryVals = [limit];
   const validTopics = [`cats`, `mitch`, `paper`];
   const validSorts = ["author", "title", "topic", "created_at"];
   const validOrder = ["ASC", "DESC"];
-  const regexNotDigit = /[\D]/g
-  const splitPage = page.split('')
+  const regexNotDigit = /[\D]/g;
+  const splitPage = page.split("");
   if (splitPage.some((character) => regexNotDigit.test(character))) {
     return Promise.reject({ status: 400, msg: "bad request" });
   }
@@ -138,13 +136,12 @@ exports.paginatedArticles =  (
   }
 
   if (page > 1) {
-    offset = page * limit - limit
-    queryVals.push(offset)
+    offset = page * limit - limit;
+    queryVals.push(offset);
   } else {
-    queryVals.push(offset)
+    queryVals.push(offset);
   }
 
-  
   let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
 
   if (validTopics.includes(topic)) {
@@ -152,11 +149,9 @@ exports.paginatedArticles =  (
     queryStr += `WHERE topic = $3 `;
   }
 
-
-
   queryStr += `GROUP BY articles.article_id `;
-  queryStr += `ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2`
-  queryStr += `;`
+  queryStr += `ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2`;
+  queryStr += `;`;
   return db.query(queryStr, queryVals).then(({ rows }) => {
     const rowsCopy = JSON.parse(JSON.stringify(rows));
     const noBodyRows = rowsCopy.map((row) => {

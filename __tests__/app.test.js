@@ -900,140 +900,130 @@ describe("DELETE /api/articles/:article_id", () => {
   });
 });
 
-describe('GET /api/articles (pagination)', () => {
-  test('200: returns articles paginated according to input', () => {
+describe("GET /api/articles (pagination)", () => {
+  test("200: returns articles paginated according to input", () => {
     return request(app)
-    .get('/api/articles?limit=5&p=1')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(5)
-    })
+      .get("/api/articles?limit=5&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(5);
+      });
   });
-  test('200: returns articles paginated with a limit of 10 as default', () => {
+  test("200: returns articles paginated with a limit of 10 as default", () => {
     return request(app)
-    .get('/api/articles?p=1')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-    })
+      .get("/api/articles?p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(10);
+      });
   });
-  test('200: returns articles limited to 10 on page 1 as default', () => {
+  test("200: returns articles limited to 10 on page 1 as default", () => {
     return request(app)
-    .get('/api/articles?limit=10')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-    })
+      .get("/api/articles?limit=10")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(10);
+      });
   });
-  test('200: returns articles with limit and by page when using sort_by query', () => {
+  test("200: returns articles with limit and by page when using sort_by query", () => {
     return request(app)
-    .get('/api/articles?limit=10&p=1&sort_by=author')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-      expect(body.articles).toBeSortedBy('author', { descending: true })
-    })
+      .get("/api/articles?limit=10&p=1&sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(10);
+        expect(body.articles).toBeSortedBy("author", { descending: true });
+      });
   });
-  test('200: returns articles with limit and by page when using order query', () => {
+  test("200: returns articles with limit and by page when using order query", () => {
     return request(app)
-    .get('/api/articles?limit=10&p=1&order=asc')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-      expect(body.articles).toBeSortedBy('created_at', { descending: false })
-    })
+      .get("/api/articles?limit=10&p=1&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(10);
+        expect(body.articles).toBeSortedBy("created_at", { descending: false });
+      });
   });
-  test('200: returns articles with limit and by page when filtering by topic', () => {
+  test("200: returns articles with limit and by page when filtering by topic", () => {
     return request(app)
-    .get('/api/articles?topic=cats&limit=10&p=1')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(1)
-    })
+      .get("/api/articles?topic=cats&limit=10&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(1);
+      });
   });
   test('400: returns "bad request" when invalid limit entered', () => {
     return request(app)
-    .get('/api/articles?limit=invalid&p=1')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .get("/api/articles?limit=invalid&p=1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
   test('400: returns "bad request" when invalid page type entered', () => {
     return request(app)
-    .get('/api/articles?limit=10&p=invalid')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .get("/api/articles?limit=10&p=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
 });
 
-describe('GET /api/articles (pagination)', () => {
-  test('200: returns articles paginated according to input', () => {
+describe("GET /api/articles/article_id/comments (pagination)", () => {
+  test("200: returns array of comments paginated according to input", () => {
     return request(app)
-    .get('/api/articles?limit=5&p=1')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(5)
-    })
+      .get("/api/articles/1/comments?limit=5&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(5);
+      });
   });
-  test('200: returns articles paginated with a limit of 10 as default', () => {
+  test("200: returns array of comments paginated with a default limit of 10", () => {
     return request(app)
-    .get('/api/articles?p=1')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-    })
+      .get("/api/articles/1/comments?p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(10);
+      });
   });
-  test('200: returns articles limited to 10 on page 1 as default', () => {
+  test("200: returns array of comments limited to input on page 1 by default", () => {
     return request(app)
-    .get('/api/articles?limit=10')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-    })
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(5);
+      });
   });
-  test('200: returns articles with limit and by page when using sort_by query', () => {
+  test('404: returns "not found" if no article with that id', () => {
     return request(app)
-    .get('/api/articles?limit=10&p=1&sort_by=author')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-      expect(body.articles).toBeSortedBy('author', { descending: true })
-    })
+      .get("/api/articles/1000/comments?limit=5&p=1")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
   });
-  test('200: returns articles with limit and by page when using order query', () => {
+  test('400: returns "bad request" if no article with that id', () => {
     return request(app)
-    .get('/api/articles?limit=10&p=1&order=asc')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(10)
-      expect(body.articles).toBeSortedBy('created_at', { descending: false })
-    })
-  });
-  test('200: returns articles with limit and by page when filtering by topic', () => {
-    return request(app)
-    .get('/api/articles?topic=cats&limit=10&p=1')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles.length).toBe(1)
-    })
+      .get("/api/articles/invalidid/comments?limit=5&p=1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
   test('400: returns "bad request" when invalid limit entered', () => {
     return request(app)
-    .get('/api/articles?limit=invalid&p=1')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .get("/api/articles/1/comments?limit=invalid&p=1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
   test('400: returns "bad request" when invalid page type entered', () => {
     return request(app)
-    .get('/api/articles?limit=10&p=invalid')
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe('bad request')
-    })
+      .get("/api/articles/1/comments?limit=10&p=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
   });
 });
