@@ -23,7 +23,6 @@ You can check out a live version of this app [here](https://nc-be-project.onrend
 ### Installation
 
 1. Clone this repository
-</br>
 ```
 $ git clone https://github.com/vh232/NC-be-project.git
 ```
