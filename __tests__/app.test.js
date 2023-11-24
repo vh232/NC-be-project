@@ -746,3 +746,17 @@ describe('POST /api/articles', () => {
     })
   });
 });
+
+describe('GET /api/articles (pagination)', () => {
+  test('200: returns articles paginated according to input', () => {
+    return request(app)
+    .get('/api/articles?limit=10&p=2')
+    .expect(200)
+    .then(({ body }) => {
+      console.log(body.articles)
+      expect(body.articles.length).toBe(10)
+    })
+  });
+});
+
+// PASSING BUT THE PAGE NUMBERS AREN'T WORKING IS ONLY DISPLAYING THE FIRST 10 REGARDLESS OF WHAT PAGE

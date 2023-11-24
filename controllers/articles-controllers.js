@@ -5,6 +5,7 @@ const {
   patchSingleArticle,
   postNewArticle,
   returnNewArticle,
+  paginatedArticles,
 } = require("../models/articles-models");
 
 exports.getArticleById = (req, res, next) => {
@@ -17,13 +18,23 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
+
   const { query } = req;
-  const { topic, sort_by, order } = query;
-  getEachArticle(topic, sort_by, order)
+  const { topic, sort_by, order, limit, page } = query;
+
+  if (limit || page) {
+    paginatedArticles(topic, sort_by, order, limit, page)
     .then((articles) => {
       res.status(200).send({ articles });
     })
     .catch(next);
+  } else {
+  getEachArticle(topic, sort_by, order, limit, page)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
+  }
 };
 
 exports.patchArticle = (req, res, next) => {

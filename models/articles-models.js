@@ -37,7 +37,7 @@ exports.getSingleArticle = (inputId) => {
 exports.getEachArticle = (
   topic,
   sort_by = "created_at",
-  inputOrder = "DESC"
+  inputOrder = "DESC",
 ) => {
   const order = inputOrder.toUpperCase();
   const queryVals = [];
@@ -53,6 +53,7 @@ exports.getEachArticle = (
     return Promise.reject({ status: 400, msg: "bad request" });
   }
 
+  
   let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
 
   if (validTopics.includes(topic)) {
@@ -61,13 +62,15 @@ exports.getEachArticle = (
   }
 
   queryStr += `GROUP BY articles.article_id `;
-  queryStr += `ORDER BY ${sort_by} ${order};`;
+  queryStr += `ORDER BY ${sort_by} ${order}`
+  queryStr += `;`
   return db.query(queryStr, queryVals).then(({ rows }) => {
     const rowsCopy = JSON.parse(JSON.stringify(rows));
     const noBodyRows = rowsCopy.map((row) => {
       delete row.body;
       return row;
     });
+    console.log(noBodyRows)
     return noBodyRows;
   });
 };
@@ -93,3 +96,46 @@ exports.returnNewArticle = (articleInput) => {
   const queryVals = [articleInput.author, articleInput.title]
   return db.query(`SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.author = $1 AND articles.title = $2 GROUP BY articles.article_id;`, queryVals)
 }
+
+exports.paginatedArticles =  (
+  topic,
+  sort_by = "created_at",
+  inputOrder = "DESC",
+  limit = 10,
+  page = 1,
+) => {
+  const order = inputOrder.toUpperCase();
+  const queryVals = [limit, page];
+  const validTopics = [`cats`, `mitch`, `paper`];
+  const validSorts = ["author", "title", "topic", "created_at"];
+  const validOrder = ["ASC", "DESC"];
+
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({ status: 404, msg: "not found" });
+  }
+
+  if (!validSorts.includes(sort_by) || !validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+
+  
+  let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+
+  if (validTopics.includes(topic)) {
+    queryVals.push(topic);
+    queryStr += `WHERE topic = $3 `;
+  }
+
+  queryStr += `GROUP BY articles.article_id `;
+  queryStr += `ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2`
+  queryStr += `;`
+  return db.query(queryStr, queryVals).then(({ rows }) => {
+    const rowsCopy = JSON.parse(JSON.stringify(rows));
+    const noBodyRows = rowsCopy.map((row) => {
+      delete row.body;
+      return row;
+    });
+    console.log(noBodyRows)
+    return noBodyRows;
+  });
+};
