@@ -142,14 +142,13 @@ exports.paginatedArticles = (
     queryVals.push(offset);
   }
 
-  let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `;
+  let queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id  `;
 
   if (validTopics.includes(topic)) {
     queryVals.push(topic);
     queryStr += `WHERE topic = $3 `;
   }
-
-  queryStr += `GROUP BY articles.article_id `;
+  queryStr += `GROUP BY articles.article_id `
   queryStr += `ORDER BY ${sort_by} ${order} LIMIT $1 OFFSET $2`;
   queryStr += `;`;
   return db.query(queryStr, queryVals).then(({ rows }) => {
@@ -161,3 +160,22 @@ exports.paginatedArticles = (
     return noBodyRows;
   });
 };
+
+exports.getTotalCount = (topic) => {
+  const validTopics = [`cats`, `mitch`, `paper`];
+  const queryVals = []
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({ status: 404, msg: "not found" });
+  }
+  let queryStr = `SELECT * FROM articles `;
+
+  if (validTopics.includes(topic)) {
+    queryVals.push(topic);
+    queryStr += `WHERE topic = $1;`;
+  }
+  return db.query(queryStr, queryVals)
+  .then(({ rows }) => {
+    return rows.length;
+  })
+
+}

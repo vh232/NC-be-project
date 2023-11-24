@@ -77,14 +77,12 @@ exports.getPaginatedArticlesComments = (inputId, limit = 10, page = "1") => {
   } else {
     queryVals.push(offset);
   }
-  console.log(queryVals, "inputid, limit, offset")
   return db
     .query(
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC OFFSET $3 ROWS FETCH NEXT $2 ROWS ONLY;`,
       queryVals
     )
     .then(({ rows }) => {
-      console.log('returning these rows')
       return rows;
     });
 };

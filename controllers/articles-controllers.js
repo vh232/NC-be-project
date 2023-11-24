@@ -7,6 +7,7 @@ const {
   returnNewArticle,
   paginatedArticles,
   deleteSingleArticle,
+  getTotalCount,
 } = require("../models/articles-models");
 const { deleteArticlesComments } = require("../models/comments-models");
 
@@ -25,9 +26,12 @@ exports.getAllArticles = (req, res, next) => {
   const { topic, sort_by, order, limit, p } = query;
 
   if (limit || p) {
-    paginatedArticles(topic, sort_by, order, limit, p)
-    .then((articles) => {
-      res.status(200).send({ articles });
+    const paginatedPromises = [paginatedArticles(topic, sort_by, order, limit, p), getTotalCount(topic)]
+    Promise.all(paginatedPromises)
+    .then((resolvedPromises) => {
+      const articles = resolvedPromises[0]
+      const total_count = resolvedPromises[1]
+      res.status(200).send({ articles, total_count });
     })
     .catch(next);
   } else {

@@ -951,6 +951,17 @@ describe("GET /api/articles (pagination)", () => {
         expect(body.articles.length).toBe(1);
       });
   });
+  test("200: returns articles paginated by input with a property of total_count with a value of number of articles in array", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body
+        expect(articles.length).toBe(10);
+        expect(body.total_count).toBe(13)
+        })
+      });
+  });
   test('400: returns "bad request" when invalid limit entered', () => {
     return request(app)
       .get("/api/articles?limit=invalid&p=1")
@@ -967,7 +978,6 @@ describe("GET /api/articles (pagination)", () => {
         expect(body.msg).toBe("bad request");
       });
   });
-});
 
 describe("GET /api/articles/article_id/comments (pagination)", () => {
   test("200: returns array of comments paginated according to input", () => {
