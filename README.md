@@ -32,22 +32,25 @@ $ git clone https://github.com/vh232/NC-be-project.git
 
 1. Create two .env files:
 </br>
+
 ```
 $ touch .env.development
-</br>
 $ touch .env.test
-```
 
+```
 2. Insert the following into each file.
  </br>
 .env.development:
 </br> 
+
 ```
 PGDATABASE=nc_news
 ```
 </br>
 .env.test:
-```PGDATABASE=nc_news_test
+
+```
+PGDATABASE=nc_news_test
 ```
 </br> You can refer to `.env.example` for a template
 
