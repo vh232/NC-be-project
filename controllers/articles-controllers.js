@@ -5,6 +5,7 @@ const {
   patchSingleArticle,
   postNewArticle,
   returnNewArticle,
+  paginatedArticles,
   deleteSingleArticle,
 } = require("../models/articles-models");
 const { deleteArticlesComments } = require("../models/comments-models");
@@ -19,13 +20,23 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
+
   const { query } = req;
-  const { topic, sort_by, order } = query;
+  const { topic, sort_by, order, limit, p } = query;
+
+  if (limit || p) {
+    paginatedArticles(topic, sort_by, order, limit, p)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
+  } else {
   getEachArticle(topic, sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
     .catch(next);
+  }
 };
 
 exports.patchArticle = (req, res, next) => {
