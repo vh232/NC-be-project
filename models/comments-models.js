@@ -62,3 +62,29 @@ exports.deleteArticlesComments = (inputId) => {
     return rows;
   });
 };
+
+exports.getPaginatedArticlesComments = (inputId, limit = 10, page = "1") => {
+  let offset = 0;
+  const queryVals = [inputId, limit];
+  const regexNotDigit = /[\D]/g;
+  const splitPage = page.split("");
+  if (splitPage.some((character) => regexNotDigit.test(character))) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  }
+  if (page > 1) {
+    offset = page * limit - limit;
+    queryVals.push(offset);
+  } else {
+    queryVals.push(offset);
+  }
+  console.log(queryVals, "inputid, limit, offset")
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC OFFSET $3 ROWS FETCH NEXT $2 ROWS ONLY;`,
+      queryVals
+    )
+    .then(({ rows }) => {
+      console.log('returning these rows')
+      return rows;
+    });
+};

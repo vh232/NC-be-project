@@ -5,6 +5,7 @@ const {
   getSingleArticlesComments,
   checkCommentExists,
   patchSingleComment,
+  getPaginatedArticlesComments,
 } = require("../models/comments-models");
 
 exports.postComment = (req, res, next) => {
@@ -30,14 +31,25 @@ exports.deleteComment = (req, res, next) => {
 
 exports.getArticleComments = (req, res, next) => {
   const id = req.params.article_id;
+  const { limit, p } = req.query
   const commentPromises = [
     getSingleArticlesComments(id),
     checkArticleExists(id),
   ];
+  if (limit || p) {
+    commentPromises.push(getPaginatedArticlesComments(id, limit, p))
+  } 
+  
   Promise.all(commentPromises)
     .then((resolvedPromises) => {
+      if (commentPromises.length === 2) {
       const comments = resolvedPromises[0];
       res.status(200).send({ comments: comments });
+      }
+      else {
+        const comments = resolvedPromises[2];
+      res.status(200).send({ comments: comments });
+      }
     })
     .catch(next);
 };
