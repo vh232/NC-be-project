@@ -41,7 +41,7 @@ exports.getEachArticle = (
 ) => {
   const order = inputOrder.toUpperCase();
   const queryVals = [];
-  const validTopics = [`cats`, `mitch`, `paper`];
+  const validTopics = [`cats`, `mitch`, `paper`, `cooking`, `coding`, `football`];
   const validSorts = ["author", "title", "topic", "created_at"];
   const validOrder = ["ASC", "DESC"];
 
